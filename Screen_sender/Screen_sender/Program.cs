@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Net;
 using System.Threading;
 using System.IO.Compression;
+using System.IO;
+
 
 namespace Screen_sender
 {
@@ -16,17 +18,20 @@ namespace Screen_sender
         static int ipPort;
         static string ipAddr;
 
-        static bool connectionEnd = false;
+        static bool connectionEnd;
 
         static async Task sendScreenData(int delay_ms)
         {
             ScreenCapture screen = new ScreenCapture(1.25f);
             TcpClient sender = new TcpClient(new IPEndPoint(IPAddress.Parse(ipAddr), 0));
-            GZipStream compressionStream = new GZipStream(sender.GetStream(), CompressionMode.Compress);
+            sender.Connect(IPAddress.Parse(ipAddr), ipPort);
+            //GZipStream zipStream = new GZipStream(sender.GetStream(), CompressionMode.Compress);
             while (!connectionEnd)
             {
                 byte[] data = screen.captureWithMouse();
-                await compressionStream.WriteAsync(data, 0, data.Length);
+                
+                await sender.GetStream().WriteAsync(data, 0, data.Length);
+                Console.WriteLine("wyslano " + data.Length + " bajtow");
                 Thread.Sleep(delay_ms);
             }
         }
@@ -84,18 +89,17 @@ namespace Screen_sender
 
         static void Main(string[] args)
         {
-            ipPort = 11309;
+            ipPort = 11308;
             ipAddr = "127.0.0.1";
             connectionEnd = false;
-            ScreenCapture sc = new ScreenCapture(1.25f);
-            byte[] array = sc.captureWithMouse();
-            Console.WriteLine(array.Length); //66960 B
-
+            //ScreenCapture sc = new ScreenCapture(1.25f);
+            //byte[] array = sc.captureWithMouse();
+            //Console.WriteLine(array.Length); //66960 B
 
             //ScreenCapture.turnOffScreen(1000);
-            //Task t1 = sendScreenData(33);
+            Task t1 = sendScreenData(20);
             //Task t2 = serverControl();
-            //t1.Wait();
+            t1.Wait();
             //t2.Wait();
         }
     }

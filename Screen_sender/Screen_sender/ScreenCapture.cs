@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Threading;
+using System.IO;
 
 namespace Screen_sender
 {
@@ -33,6 +34,7 @@ namespace Screen_sender
         public ScreenCapture(float DPI)
         {
             this.DPI = DPI;
+            Console.WriteLine(Screen.PrimaryScreen.BitsPerPixel);
         }
         private ImageCodecInfo GetEncoderInfo(String mimeType)
         {
@@ -82,29 +84,53 @@ namespace Screen_sender
             bmp.Save("screen_" + DateTime.Now.Year + '-' + DateTime.Now.DayOfYear + '-' + DateTime.Now.TimeOfDay + ".jpg", imageCodecInfo, encoderParameters);
         }
 
-        public byte[] captureWithMouse()
+        public byte[] captureNoMouse()
         {
-            var allBounds = Screen.AllScreens.Select(s => s.Bounds).ToArray();
-            Cursor cur = Cursor.Current;
-            Rectangle scrBounds = Rectangle.FromLTRB(allBounds.Min(b => b.Left), allBounds.Min(b => b.Top), (int) (allBounds.Max(b => b.Right) * DPI), (int) (allBounds.Max(b => b.Bottom) * DPI));
+            Screen scr = Screen.PrimaryScreen;
+            Rectangle scrBounds = Rectangle.FromLTRB(scr.Bounds.Left, scr.Bounds.Top, (int)(scr.Bounds.Right * DPI), (int)(scr.Bounds.Bottom * DPI));
             //Console.WriteLine(allBounds.Length);
-            Rectangle curBounds = new Rectangle(Cursor.Position, cur.Size);
             Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
-            Bitmap cursorBMP = new Bitmap(cur.Size.Width, cur.Size.Height);
 
             // --------------< save image to file >-----------------
-
             using (Graphics g = Graphics.FromImage(desktopBMP))
             {
+                g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
+            }
+            using (var mss = new MemoryStream())
+            {
+                ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
+                EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
+                EncoderParameters encoderParameters = new EncoderParameters(1);
+                encoderParameters.Param[0] = encoderParameter;
+                desktopBMP.Save(mss, imageCodecInfo, encoderParameters);
+                return mss.ToArray();
+            }
+        }
 
+        public byte[] captureWithMouse()
+        {
+            Screen scr = Screen.PrimaryScreen;
+            Cursor cur = Cursors.Default;
+            Rectangle scrBounds = Rectangle.FromLTRB(scr.Bounds.Left, scr.Bounds.Top, (int) (scr.Bounds.Right * DPI), (int) (scr.Bounds.Bottom * DPI));
+            //Console.WriteLine(allBounds.Length);
+            Rectangle curBounds = new Rectangle(new Point((int)(Cursor.Position.X*DPI - Cursor.Current.HotSpot.X), (int)(Cursor.Position.Y*DPI - Cursor.Current.HotSpot.Y)), cur.Size);
+            Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
+
+            // --------------< save image to file >-----------------
+            using (Graphics g = Graphics.FromImage(desktopBMP))
+            {
                 g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
                 cur.Draw(g,curBounds);      
             }
-
-            ImageConverter conv = new ImageConverter();
-        
-            return (byte[])conv.ConvertTo(desktopBMP, typeof(byte[]));
-
+            using (var mss = new MemoryStream())
+            {
+                ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
+                EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
+                EncoderParameters encoderParameters = new EncoderParameters(1);
+                encoderParameters.Param[0] = encoderParameter;
+                desktopBMP.Save(mss, imageCodecInfo, encoderParameters);
+                return mss.ToArray();
+            }
         }
     }
 }
