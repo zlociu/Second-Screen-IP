@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
+using System.IO.Compression;
 
 namespace Screen_sender
 {
@@ -20,19 +21,65 @@ namespace Screen_sender
         static async Task sendScreenData(int delay_ms)
         {
             ScreenCapture screen = new ScreenCapture(1.25f);
-            TcpClient sender = new TcpClient(new IPEndPoint(IPAddress.Parse(ipAddr), ipPort));
-            while(!connectionEnd)
+            TcpClient sender = new TcpClient(new IPEndPoint(IPAddress.Parse(ipAddr), 0));
+            GZipStream compressionStream = new GZipStream(sender.GetStream(), CompressionMode.Compress);
+            while (!connectionEnd)
             {
-                byte[] data = screen.captureWithMouse(1.25f);
-                await sender.GetStream().WriteAsync(null, 0, 0);
-                Thread.Sleep(17);
+                byte[] data = screen.captureWithMouse();
+                await compressionStream.WriteAsync(data, 0, data.Length);
+                Thread.Sleep(delay_ms);
             }
         }
 
         static Task serverControl()
         {
             Console.WriteLine("jkk");
-            return null;
+            while (true)
+            {
+                string command = Console.ReadLine();
+                var tab = command.Split(new char[]{' '}, 2);
+                int len = tab.Length;
+                switch(tab[0])
+                {
+                    case "start":
+                        {
+                            ipAddr = tab[1];
+                            ipPort = int.Parse(tab[2]);
+
+                        }
+                        break;
+                    case "stop":
+                        {
+                            connectionEnd = true;
+                        }
+                        break;
+                    case "shutdown":
+                        {
+                            connectionEnd = true;
+                            Environment.Exit(0);
+                        }
+                        break;
+                    case "change":
+                        {
+                            switch (tab[1])
+                            {
+                                case "": break;
+                                default: break;
+                            }
+                        }
+                        break;
+                    case "help":
+                        {
+                            Console.WriteLine("Second Screen IP helpdesk");
+                            Console.WriteLine("List of commands:");
+                            Console.WriteLine("start <ipAddress> <tcpPort> <mode>");
+                            Console.WriteLine("stop");
+                            Console.WriteLine("change <mode>");
+                        }
+                        break;
+                    default: Console.WriteLine("unknown command"); break;
+                }
+            }
         }
 
         static void Main(string[] args)
@@ -42,7 +89,11 @@ namespace Screen_sender
             connectionEnd = false;
             ScreenCapture sc = new ScreenCapture(1.25f);
             byte[] array = sc.captureWithMouse();
-            //Task t1 = sendScreenData();
+            Console.WriteLine(array.Length); //66960 B
+
+
+            //ScreenCapture.turnOffScreen(1000);
+            //Task t1 = sendScreenData(33);
             //Task t2 = serverControl();
             //t1.Wait();
             //t2.Wait();
