@@ -97,7 +97,7 @@ namespace Screen_sender
             //Console.WriteLine(array.Length); //66960 B
 
             //ScreenCapture.turnOffScreen(1000);
-            Task t1 = sendScreenData(20);
+            Task t1 = sendScreenData(17);
             //Task t2 = serverControl();
             t1.Wait();
             //t2.Wait();

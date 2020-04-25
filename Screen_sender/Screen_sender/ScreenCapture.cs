@@ -27,6 +27,9 @@ namespace Screen_sender
     class ScreenCapture
     {
         private float DPI;
+        private Screen screen;
+        Cursor cursor;
+        Rectangle scrBounds;
 
         [DllImport("user32.dll")]
         private static extern int SendMessage(int hWnd, int hMsg, int wParam, int lParam);
@@ -34,6 +37,9 @@ namespace Screen_sender
         public ScreenCapture(float DPI)
         {
             this.DPI = DPI;
+            this.screen = Screen.PrimaryScreen;
+            this.cursor = Cursors.Default;
+            this.scrBounds = new Rectangle(screen.Bounds.X, screen.Bounds.Y, (int)(screen.Bounds.Width * DPI), (int)(screen.Bounds.Height * DPI));
             Console.WriteLine(Screen.PrimaryScreen.BitsPerPixel);
         }
         private ImageCodecInfo GetEncoderInfo(String mimeType)
@@ -86,8 +92,6 @@ namespace Screen_sender
 
         public byte[] captureNoMouse()
         {
-            Screen scr = Screen.PrimaryScreen;
-            Rectangle scrBounds = Rectangle.FromLTRB(scr.Bounds.Left, scr.Bounds.Top, (int)(scr.Bounds.Right * DPI), (int)(scr.Bounds.Bottom * DPI));
             //Console.WriteLine(allBounds.Length);
             Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
 
@@ -98,39 +102,55 @@ namespace Screen_sender
             }
             using (var mss = new MemoryStream())
             {
-                ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
-                EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
-                EncoderParameters encoderParameters = new EncoderParameters(1);
-                encoderParameters.Param[0] = encoderParameter;
-                desktopBMP.Save(mss, imageCodecInfo, encoderParameters);
+                //ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
+                //EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
+                //EncoderParameters encoderParameters = new EncoderParameters();
+                //encoderParameters.Param[0] = encoderParameter;
+                desktopBMP.Save(mss, ImageFormat.Jpeg);
                 return mss.ToArray();
             }
         }
 
         public byte[] captureWithMouse()
         {
-            Screen scr = Screen.PrimaryScreen;
-            Cursor cur = Cursors.Default;
-            Rectangle scrBounds = Rectangle.FromLTRB(scr.Bounds.Left, scr.Bounds.Top, (int) (scr.Bounds.Right * DPI), (int) (scr.Bounds.Bottom * DPI));
+
             //Console.WriteLine(allBounds.Length);
-            Rectangle curBounds = new Rectangle(new Point((int)(Cursor.Position.X*DPI - Cursor.Current.HotSpot.X), (int)(Cursor.Position.Y*DPI - Cursor.Current.HotSpot.Y)), cur.Size);
+            Rectangle curBounds = new Rectangle(new Point((int)(Cursor.Position.X*DPI - Cursor.Current.HotSpot.X), (int)(Cursor.Position.Y*DPI - Cursor.Current.HotSpot.Y)), cursor.Size);
             Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
 
             // --------------< save image to file >-----------------
             using (Graphics g = Graphics.FromImage(desktopBMP))
             {
                 g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
-                cur.Draw(g,curBounds);      
+                cursor.Draw(g,curBounds);
+                using (MemoryStream mss = new MemoryStream())
+                {
+                    desktopBMP.Save(mss, ImageFormat.Jpeg);
+                    return mss.ToArray();
+                }
             }
-            using (var mss = new MemoryStream())
+            
+            
+            
+            /*
+            using (Bitmap b = new Bitmap(1280, 720))
             {
-                ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
-                EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
-                EncoderParameters encoderParameters = new EncoderParameters(1);
-                encoderParameters.Param[0] = encoderParameter;
-                desktopBMP.Save(mss, imageCodecInfo, encoderParameters);
-                return mss.ToArray();
+                using (Graphics g = Graphics.FromImage(b))
+                {
+                    g.DrawImage(desktopBMP, 0, 0, 1280, 720);
+                    using (var mss = new MemoryStream())
+                    {
+                        //ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
+                        //EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
+                        //EncoderParameters encoderParameters = new EncoderParameters(1);
+                        //encoderParameters.Param[0] = encoderParameter;
+                        b.Save(mss, ImageFormat.Jpeg);
+                        return mss.ToArray();
+                    }
+                }
             }
+            */
+            
         }
     }
 }
