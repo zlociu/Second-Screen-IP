@@ -40,19 +40,7 @@ namespace Screen_sender
             this.screen = Screen.PrimaryScreen;
             this.cursor = Cursors.Default;
             this.scrBounds = new Rectangle(screen.Bounds.X, screen.Bounds.Y, (int)(screen.Bounds.Width * DPI), (int)(screen.Bounds.Height * DPI));
-            Console.WriteLine(Screen.PrimaryScreen.BitsPerPixel);
-        }
-        private ImageCodecInfo GetEncoderInfo(String mimeType)
-        {
-            int j;
-            ImageCodecInfo[] encoders;
-            encoders = ImageCodecInfo.GetImageEncoders();
-            for (j = 0; j < encoders.Length; ++j)
-            {
-                if (encoders[j].MimeType == mimeType)
-                    return encoders[j];
-            }
-            return null;
+            //Console.WriteLine(Screen.PrimaryScreen.BitsPerPixel);
         }
 
         public static void turnOffScreen(int sleep_ms)
@@ -68,7 +56,7 @@ namespace Screen_sender
             Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
 
             // --------------< save image to file >-----------------
-            ImageCodecInfo imageCodecInfo = GetEncoderInfo("image/jpeg");
+            ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
             System.Drawing.Imaging.Encoder encoder = System.Drawing.Imaging.Encoder.Quality;
             EncoderParameter encoderParameter = new EncoderParameter(encoder, 100L);
             EncoderParameters encoderParameters = new EncoderParameters(1);
@@ -82,7 +70,7 @@ namespace Screen_sender
 
         public void saveScreenshot(Bitmap bmp)
         {
-            ImageCodecInfo imageCodecInfo = GetEncoderInfo("image/jpeg");
+            ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
             System.Drawing.Imaging.Encoder encoder = System.Drawing.Imaging.Encoder.Quality;
             EncoderParameter encoderParameter = new EncoderParameter(encoder, 100L);
             EncoderParameters encoderParameters = new EncoderParameters(1);

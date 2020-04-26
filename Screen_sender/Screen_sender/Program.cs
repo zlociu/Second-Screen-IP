@@ -17,10 +17,13 @@ namespace Screen_sender
 
         static int ipPort;
         static string ipAddr;
+        static int fps;
+        static int quality;
+        static int resolution;
 
         static bool connectionEnd;
 
-        static async Task sendScreenData(int delay_ms)
+        static async void sendScreenDataAsync(int delay_ms)
         {
             ScreenCapture screen = new ScreenCapture(1.25f);
             TcpClient sender = new TcpClient(new IPEndPoint(IPAddress.Parse(ipAddr), 0));
@@ -31,31 +34,50 @@ namespace Screen_sender
                 byte[] data = screen.captureWithMouse();
                 
                 await sender.GetStream().WriteAsync(data, 0, data.Length);
-                Console.WriteLine("wyslano " + data.Length + " bajtow");
+                //Console.WriteLine("wyslano " + data.Length + " bajtow");
                 Thread.Sleep(delay_ms);
             }
         }
 
         static Task serverControl()
         {
-            Console.WriteLine("jkk");
+            Console.WriteLine("Send client is running");
+            Console.WriteLine("Type 'help' for more options");
+
             while (true)
             {
                 string command = Console.ReadLine();
-                var tab = command.Split(new char[]{' '}, 2);
+                var tab = command.Split(' ');
                 int len = tab.Length;
                 switch(tab[0])
                 {
                     case "start":
                         {
-                            ipAddr = tab[1];
-                            ipPort = int.Parse(tab[2]);
-
+                            try
+                            {
+                                connectionEnd = false;
+                                Task t1 = new Task(()=> { sendScreenDataAsync((int)(1000 / fps)); });
+                                t1.Start();
+                            }
+                            catch (Exception) { }
                         }
                         break;
                     case "stop":
                         {
                             connectionEnd = true;
+                        }
+                        break;
+                    case "restart":
+                        {
+                            connectionEnd = true;
+                            Thread.Sleep(1000);
+                            try
+                            {
+                                connectionEnd = false;
+                                Task t1 = new Task(() => { sendScreenDataAsync((int)(1000 / fps)); });
+                                t1.Start();
+                            }
+                            catch (Exception) { }
                         }
                         break;
                     case "shutdown":
@@ -64,22 +86,123 @@ namespace Screen_sender
                             Environment.Exit(0);
                         }
                         break;
-                    case "change":
+                    case "setup":
                         {
-                            switch (tab[1])
+                            if (len % 2 == 1)
                             {
-                                case "": break;
-                                default: break;
+                                for (int i = 1; i < len; i = i + 2)
+                                {
+                                    switch (tab[i])
+                                    {
+                                        case "--addr":
+                                            {
+                                                try
+                                                {
+                                                    if (tab[i + 1].StartsWith("--")) throw new NotImplementedException();
+                                                    ipAddr = tab[i+1];
+                                                    Console.WriteLine("IP address: " + ipAddr);
+                                                }
+                                                catch (Exception) { Console.WriteLine("error command"); }
+                                            }
+                                            break;
+                                        case "--port":
+                                            {
+                                                try
+                                                {
+                                                    ipPort = int.Parse(tab[i+1]);
+                                                    Console.WriteLine("TCP port: " + ipPort);
+
+                                                }
+                                                catch (Exception) { Console.WriteLine("error command"); }
+                                            }
+                                            break;
+                                        case "--fps":
+                                            {
+                                                try
+                                                {
+                                                    fps = int.Parse(tab[i+1]);
+                                                    Console.WriteLine("FPS: " + fps);
+
+                                                }
+                                                catch (Exception) { Console.WriteLine("error command"); }
+                                            }
+                                            break;
+                                        case "--qual":
+                                            {
+                                                try
+                                                {
+                                                    quality = int.Parse(tab[i+1]);
+                                                    Console.WriteLine("JPEG Quality: " + quality);
+
+                                                }
+                                                catch (Exception) { Console.WriteLine("error command"); }
+                                            }
+                                            break;
+                                        case "--res":
+                                            {
+                                                try
+                                                {
+                                                    resolution = int.Parse(tab[i+1]);
+                                                    Console.WriteLine("Resolution: " + resolution + "p");
+                                                }
+                                                catch (Exception) { Console.WriteLine("error command"); }
+                                            }
+                                            break;
+                                        default: break;
+                                    }
+                                }
                             }
+                        }
+                        break;
+                    case "tech":
+                        {
+                            Console.WriteLine("Second Screen IP current settings: ");
+                            Console.WriteLine("IP address: " + ipAddr);
+                            Console.WriteLine("TCP port: " + ipPort);
+                            Console.WriteLine("FPS: " + fps);
+                            Console.WriteLine("Video quality (0-100%): " + quality + "%");
+                            Console.WriteLine("Resolution: " + resolution + "p");
                         }
                         break;
                     case "help":
                         {
-                            Console.WriteLine("Second Screen IP helpdesk");
-                            Console.WriteLine("List of commands:");
-                            Console.WriteLine("start <ipAddress> <tcpPort> <mode>");
-                            Console.WriteLine("stop");
-                            Console.WriteLine("change <mode>");
+
+                            if(len==1)
+                            {
+                                Console.WriteLine("Second Screen IP helpdesk");
+                                Console.WriteLine("List of commands:");
+                                Console.WriteLine("start <ipAddress> <tcpPort> <mode>");
+                                Console.WriteLine("stop");
+                                Console.WriteLine("setup [--<param> <value>]");
+                            }
+                            else
+                            {
+                                switch(tab[1])
+                                {
+                                    case "":
+                                        {
+
+                                        }
+                                        break;
+                                    case "setup":
+                                        {
+
+                                            Console.WriteLine("change available parameters:");
+                                            Console.WriteLine("--addr <ipv4_address>");
+                                            Console.WriteLine("--port <tcp_port>");
+                                            Console.WriteLine("--fps [25 | 30 | 50 | 60]");
+                                            Console.WriteLine("--quality <value> (value 0-100)");
+                                            Console.WriteLine("--res <resY> ");
+                                        }
+                                        break;
+                                    case "1":
+                                        {
+
+                                        }
+                                        break;
+                                    default:break;
+                                }
+                            }
                         }
                         break;
                     default: Console.WriteLine("unknown command"); break;
@@ -91,16 +214,19 @@ namespace Screen_sender
         {
             ipPort = 11308;
             ipAddr = "127.0.0.1";
+            fps = 30;
+            quality = 100;
+            resolution = 1080;
             connectionEnd = false;
             //ScreenCapture sc = new ScreenCapture(1.25f);
             //byte[] array = sc.captureWithMouse();
             //Console.WriteLine(array.Length); //66960 B
 
             //ScreenCapture.turnOffScreen(1000);
-            Task t1 = sendScreenData(17);
-            //Task t2 = serverControl();
-            t1.Wait();
-            //t2.Wait();
+            //Task t1 = sendScreenData(17);
+            Task t2 = serverControl();
+            //t1.Wait();
+            t2.Wait();
         }
     }
 }

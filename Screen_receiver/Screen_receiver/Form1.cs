@@ -24,7 +24,7 @@ namespace Screen_receiver
                 TcpListener receiver = new TcpListener(IPAddress.Any, 11308);
                 receiver.Start();
                 TcpClient client = receiver.AcceptTcpClient();
-                client.ReceiveTimeout = 1000;
+                client.ReceiveTimeout = 500;
                 byte[] data = new byte[1920 * 1080 * 4];
                 MemoryStream m1 = new MemoryStream(data, 0, data.Length);
                 //GZipStream zipStream = new GZipStream(client.GetStream(), CompressionMode.Decompress);
@@ -40,23 +40,20 @@ namespace Screen_receiver
                             pictureBox1.Refresh();
                         });
                     }
-                    
                     catch (IOException)
                     {
                         pictureBox1.Invoke((MethodInvoker)delegate
                         {
+                            receiver.Stop();
                             Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
                             Graphics flagGraphics = Graphics.FromImage(flag);
-                            
                             flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
-                            flagGraphics.DrawString("Connection end, ",Font.)
+                            flagGraphics.DrawString("Waiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(350, 300));
                             pictureBox1.Image = flag;
                             pictureBox1.Refresh();
-                            receiver.Stop();
                         });
                         break;
                     }
-                    
                     catch (Exception)
                     {
                         Environment.Exit(0);
@@ -70,6 +67,13 @@ namespace Screen_receiver
             InitializeComponent();
             this.AutoSize = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
+            Graphics flagGraphics = Graphics.FromImage(flag);
+
+            flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
+            flagGraphics.DrawString("Waiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(350,300));
+            pictureBox1.Image = flag;
+            pictureBox1.Refresh();
             var t = new Thread(listenTask);
             t.IsBackground = true;
             t.Start();
