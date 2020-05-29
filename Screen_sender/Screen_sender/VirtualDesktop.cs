@@ -57,7 +57,7 @@ public class VirtualDesktop : IDisposable
     // Switch to the desktop we were on before.
     public void Dispose()
     {
-        SwitchToOrginal();
+        SwitchToOriginal();
         ((IDisposable)this).Dispose();
     }
 
@@ -96,7 +96,7 @@ public class VirtualDesktop : IDisposable
         SwitchDesktop(DesktopPtr);
     }
 
-    public void SwitchToOrginal()
+    public void SwitchToOriginal()
     {
         SwitchDesktop(_hOrigDesktop);
         SetThreadDesktop(_hOrigDesktop);
