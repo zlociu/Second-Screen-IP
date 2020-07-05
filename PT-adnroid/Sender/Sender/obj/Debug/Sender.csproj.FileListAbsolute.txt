@@ -1,0 +1,14 @@
+E:\PT\Sender\Sender\bin\Debug\Sender.exe.config
+E:\PT\Sender\Sender\bin\Debug\Sender.exe
+E:\PT\Sender\Sender\bin\Debug\Sender.pdb
+E:\PT\Sender\Sender\obj\Debug\Sender.csprojAssemblyReference.cache
+E:\PT\Sender\Sender\obj\Debug\Sender.csproj.CoreCompileInputs.cache
+E:\PT\Sender\Sender\obj\Debug\Sender.exe
+E:\PT\Sender\Sender\obj\Debug\Sender.pdb
+E:\PT-android\Sender\Sender\bin\Debug\Sender.exe.config
+E:\PT-android\Sender\Sender\bin\Debug\Sender.exe
+E:\PT-android\Sender\Sender\bin\Debug\Sender.pdb
+E:\PT-android\Sender\Sender\obj\Debug\Sender.csprojAssemblyReference.cache
+E:\PT-android\Sender\Sender\obj\Debug\Sender.csproj.CoreCompileInputs.cache
+E:\PT-android\Sender\Sender\obj\Debug\Sender.exe
+E:\PT-android\Sender\Sender\obj\Debug\Sender.pdb
