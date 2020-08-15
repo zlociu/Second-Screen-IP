@@ -25,7 +25,7 @@ namespace Screen_sender
 
         static async void sendScreenDataAsync(int delay_ms)
         {
-            ScreenCapture screen = new ScreenCapture(1.25f);
+            ScreenCapture screen = new ScreenCapture(1.0f);
             TcpClient sender = new TcpClient(new IPEndPoint(IPAddress.Parse(ipAddr), 0));
             sender.Connect(IPAddress.Parse(ipAddr), ipPort);
             //GZipStream zipStream = new GZipStream(sender.GetStream(), CompressionMode.Compress);

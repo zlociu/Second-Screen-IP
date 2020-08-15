@@ -48,7 +48,7 @@ namespace Screen_receiver
                             Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
                             Graphics flagGraphics = Graphics.FromImage(flag);
                             flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
-                            flagGraphics.DrawString("Waiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(350, 300));
+                            flagGraphics.DrawString("Awaiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(300, 250));
                             pictureBox1.Image = flag;
                             pictureBox1.Refresh();
                         });
@@ -65,13 +65,17 @@ namespace Screen_receiver
         public Form1()
         {
             InitializeComponent();
+            Width = 1152;
+            Height = 648;
+            pictureBox1.Size = Size;
+            
             this.AutoSize = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
             Graphics flagGraphics = Graphics.FromImage(flag);
 
             flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
-            flagGraphics.DrawString("Waiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(350,300));
+            flagGraphics.DrawString("Awaiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(300,250));
             pictureBox1.Image = flag;
             pictureBox1.Refresh();
             var t = new Thread(listenTask);
