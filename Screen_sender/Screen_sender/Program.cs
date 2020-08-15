@@ -35,7 +35,7 @@ namespace Screen_sender
                 
                 await sender.GetStream().WriteAsync(data, 0, data.Length);
                 //Console.WriteLine("wyslano " + data.Length + " bajtow");
-                Thread.Sleep(delay_ms);
+                Thread.Sleep(1);
             }
         }
 
