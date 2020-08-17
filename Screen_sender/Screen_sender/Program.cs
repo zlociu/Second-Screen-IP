@@ -20,21 +20,23 @@ namespace Screen_sender
         static int fps;
         static int quality;
         static int resolution;
+        static float dpi;
 
         static bool connectionEnd;
 
-        static async void sendScreenDataAsync(int delay_ms)
+        static void sendScreenDataAsync(int delay_ms)
         {
-            ScreenCapture screen = new ScreenCapture(1.0f);
+            ScreenCapture screen = new ScreenCapture(dpi);
             TcpClient sender = new TcpClient(new IPEndPoint(IPAddress.Parse(ipAddr), 0));
             sender.Connect(IPAddress.Parse(ipAddr), ipPort);
             //GZipStream zipStream = new GZipStream(sender.GetStream(), CompressionMode.Compress);
+            //int it = 0;
             while (!connectionEnd)
             {
                 byte[] data = screen.captureWithMouse();
                 
-                await sender.GetStream().WriteAsync(data, 0, data.Length);
-                //Console.WriteLine("wyslano " + data.Length + " bajtow");
+                sender.GetStream().WriteAsync(data, 0, data.Length);
+                //Console.WriteLine(++it);
                 Thread.Sleep(1);
             }
         }
@@ -148,6 +150,16 @@ namespace Screen_sender
                                                 catch (Exception) { Console.WriteLine("error command"); }
                                             }
                                             break;
+                                        case "--dpi":
+                                            {
+                                                try
+                                                {
+                                                    dpi = float.Parse(tab[i + 1]);
+                                                    Console.WriteLine("Dpi: " + dpi);
+                                                }
+                                                catch (Exception) { Console.WriteLine("error command"); }
+                                            }
+                                            break;
                                         default: break;
                                     }
                                 }
@@ -162,6 +174,7 @@ namespace Screen_sender
                             Console.WriteLine("FPS: " + fps);
                             Console.WriteLine("Video quality (0-100%): " + quality + "%");
                             Console.WriteLine("Resolution: " + resolution + "p");
+                            Console.WriteLine("Dpi: " + dpi);
                         }
                         break;
                     case "help":
@@ -193,6 +206,7 @@ namespace Screen_sender
                                             Console.WriteLine("--fps [25 | 30 | 50 | 60]");
                                             Console.WriteLine("--quality <value> (value 0-100)");
                                             Console.WriteLine("--res <resY> ");
+                                            Console.WriteLine("--dpi <value (e.g. 1,25)>  ");
                                         }
                                         break;
                                     case "1":
@@ -218,6 +232,7 @@ namespace Screen_sender
             quality = 100;
             resolution = 1080;
             connectionEnd = false;
+            dpi = 1.25f;
             //ScreenCapture sc = new ScreenCapture(1.25f);
             //byte[] array = sc.captureWithMouse();
             //Console.WriteLine(array.Length); //66960 B

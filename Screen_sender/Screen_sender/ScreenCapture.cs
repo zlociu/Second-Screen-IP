@@ -131,7 +131,7 @@ namespace Screen_sender
                     using (Graphics g = Graphics.FromImage(b))
                     {
                         g.DrawImage(desktopBMP, 0, 0, 1280, 720);
-                        using (var mss = new MemoryStream())
+                        using (var mss = new MemoryStream(1280*720))
                         {
                             //ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
                             //EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
