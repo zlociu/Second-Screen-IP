@@ -17,6 +17,7 @@ namespace Screen_receiver
 {
     public partial class Form1 : Form
     {
+        private bool isFullScreen = false;
         public void listenTask()
         {
             while (true)
@@ -88,5 +89,20 @@ namespace Screen_receiver
             pictureBox1.Size = Size;
         }
 
+        private void pictureBox1_DoubleClick(object sender, EventArgs e)
+        {
+            if (!isFullScreen)
+            {
+                FormBorderStyle = FormBorderStyle.None;
+                WindowState = FormWindowState.Maximized;
+                isFullScreen = true;
+            }
+            else
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+                WindowState = FormWindowState.Normal;
+                isFullScreen = false;
+            }
+        }
     }
 }
