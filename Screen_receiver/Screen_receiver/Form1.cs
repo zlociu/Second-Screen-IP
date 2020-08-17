@@ -70,7 +70,7 @@ namespace Screen_receiver
             pictureBox1.Size = Size;
             
             this.AutoSize = true;
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
             Graphics flagGraphics = Graphics.FromImage(flag);
 
