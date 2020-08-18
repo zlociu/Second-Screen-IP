@@ -107,6 +107,7 @@ namespace Screen_sender
             Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
 
             // --------------< save image to file >-----------------
+            /*
             using (Graphics g = Graphics.FromImage(desktopBMP))
             {
                 g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
@@ -117,28 +118,31 @@ namespace Screen_sender
                     return mss.ToArray();
                 }
             }
-            
-            
-            
-            /*
+            */
+
+            // ---------------< save smaller size >-----------------
+
             using (Bitmap b = new Bitmap(1280, 720))
             {
-                using (Graphics g = Graphics.FromImage(b))
+                using (Graphics g2 = Graphics.FromImage(desktopBMP))
                 {
-                    g.DrawImage(desktopBMP, 0, 0, 1280, 720);
-                    using (var mss = new MemoryStream())
+                    g2.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
+                    cursor.Draw(g2, curBounds);
+                    using (Graphics g = Graphics.FromImage(b))
                     {
-                        //ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
-                        //EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
-                        //EncoderParameters encoderParameters = new EncoderParameters(1);
-                        //encoderParameters.Param[0] = encoderParameter;
-                        b.Save(mss, ImageFormat.Jpeg);
-                        return mss.ToArray();
+                        g.DrawImage(desktopBMP, 0, 0, 1280, 720);
+                        using (var mss = new MemoryStream())
+                        {
+                            //ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
+                            //EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
+                            //EncoderParameters encoderParameters = new EncoderParameters(1);
+                            //encoderParameters.Param[0] = encoderParameter;
+                            b.Save(mss, ImageFormat.Jpeg);
+                            return mss.ToArray();
+                        }
                     }
                 }
             }
-            */
-            
         }
     }
 }
