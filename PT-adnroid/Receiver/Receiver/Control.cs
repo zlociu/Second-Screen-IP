@@ -19,7 +19,7 @@ namespace Receiver
     public class Control : Activity
     {
         //Instances   
-        private Button btnTakeScreen, btnLogout;
+        private Button btnLogout;
         private ImageView imageView;
         NetworkStream stream;
         TcpClient client = Connection.Instance.client;
@@ -28,42 +28,18 @@ namespace Receiver
             base.OnCreate(savedInstanceState);
             
             SetContentView(Resource.Layout.Control);
-            btnTakeScreen = FindViewById<Button>(Resource.Id.btnTakeScreen);
             btnLogout = FindViewById<Button>(Resource.Id.btnLogout);
             imageView = FindViewById<ImageView>(Resource.Id.imageView);
 
-
-            //var thread = new Thread(() => MethodToRun(client));
-            //thread.Start();
             ThreadPool.QueueUserWorkItem(o => MethodToRun());
 
-            //Take Screenshot command button  
-
-
-            btnTakeScreen.Click += async delegate
-            {
-                getimg(client);
-                //stream = client.GetStream();
-                //String s = "TSC1";
-                //byte[] message = Encoding.ASCII.GetBytes(s);
-                //stream.Write(message, 0, message.Length);
-                //while (true)
-               // {
-                    //var data = getData(client);
-                    //var image = BitmapFactory.DecodeByteArray(data, 0, data.Length);
-                    //imageView.SetImageBitmap(image);
-                    //message = Encoding.ASCII.GetBytes(s);
-                    //stream.Write(message, 0, message.Length);
-                //}
-            };
-            //Logout button  
             btnLogout.Click += delegate
             {
-                StartActivity(typeof(MainActivity));
+                StartActivity(typeof(Connect));
                 client.Close();
             };
         }
-        //Convert byte to Image  
+
         void MethodToRun()
         {
             stream = client.GetStream();
@@ -73,9 +49,9 @@ namespace Receiver
             while (true)
             {
                 var data = getData(client);
-                var image = BitmapFactory.DecodeByteArray(data, 0, data.Length);
+                Android.Graphics.Bitmap image = BitmapFactory.DecodeByteArray(data, 0, data.Length);
                 RunOnUiThread(() => imageView.SetImageBitmap(image));
-                //update(image, imageView);
+                stream.Write(message, 0, message.Length);
             }
         }
         public byte[] getData(TcpClient client)
@@ -88,7 +64,7 @@ namespace Receiver
             int bytesLeft = dataLength;
             byte[] data = new byte[dataLength];
 
-            int buffersize = 1024;
+            int buffersize = 2048;
             int bytesRead = 0;
 
             while (bytesLeft > 0)
@@ -113,18 +89,13 @@ namespace Receiver
             {
                 var data = getData(client);
                 var image = BitmapFactory.DecodeByteArray(data, 0, data.Length);
-                //RunOnUiThread(() => { imageView.SetImageBitmap(image); });
+
                 imageView.SetImageBitmap(image);
                 imageView.Invalidate();
 
-                //message = Encoding.ASCII.GetBytes(s);
-                //stream.Write(message, 0, message.Length);
             }
         }
-        public void update(Bitmap image, ImageView v)
-        {
-            imageView.SetImageBitmap(image);
-        }
+
     }
 }
 

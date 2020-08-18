@@ -19,6 +19,10 @@ namespace Sender
         public static TcpClient client;
         private static TcpListener listener;
         private static string ipString;
+        private Screen screen = Screen.PrimaryScreen;
+        private static float DPI = 1.25f;
+        private static Cursor cursor = Cursors.Default;
+        static Rectangle scrBounds = new Rectangle(Screen.PrimaryScreen.Bounds.X, Screen.PrimaryScreen.Bounds.Y, (int)(Screen.PrimaryScreen.Bounds.Width * 1.25f), (int)(Screen.PrimaryScreen.Bounds.Height * 1.25f));
         static void Main(string[] args)
         {
             IPAddress[] localIp = Dns.GetHostAddresses(Dns.GetHostName());
@@ -28,11 +32,6 @@ namespace Sender
                 {
                     ipString = address.ToString();
                 }
-            }
-            //Workstation Shutdown function  
-            void Shutdown()
-            {
-                System.Diagnostics.Process.Start("Shutdown", "-s -t 10");
             }
             //Save Screenshot function  
             Bitmap SaveScreenshot()
@@ -75,52 +74,45 @@ namespace Sender
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ipString), 1234);
             listener = new TcpListener(ep);
             listener.Start();
-            Console.WriteLine(@"    
+            while (true)
+            {
+                Console.WriteLine(@"    
             ===================================================    
                    Started listening requests at: {0}:{1}    
             ===================================================",
             ep.Address, ep.Port);
-            client = listener.AcceptTcpClient();
-            Console.WriteLine("Connected to client!" + " \n");
-            while (client.Connected)
-            {
-                try
+                client = listener.AcceptTcpClient();
+                Console.WriteLine("Connected to client!" + " \n");
+                while (client.Connected)
                 {
-                    const int bytesize = 1024 * 1024;
-                    byte[] buffer = new byte[bytesize];
-                    string x = client.GetStream().Read(buffer, 0, bytesize).ToString();
-                    var data = ASCIIEncoding.ASCII.GetString(buffer);
+                    try
+                    {
+                        const int bytesize = 1024 * 1024;
+                        byte[] buffer = new byte[bytesize];
+                        string x = client.GetStream().Read(buffer, 0, bytesize).ToString();
+                        var MEM = client.GetStream();
 
-                    if (data.ToUpper().Contains("SLP2"))
-                    {
-                        Console.WriteLine("Pc is going to Sleep Mode!" + " \n");
-                        Thread.Sleep(2000);
-                    }
-                    else if (data.ToUpper().Contains("SHTD3"))
-                    {
-                        Console.WriteLine("Pc is going to Shutdown!" + " \n");
+                        var data = ASCIIEncoding.ASCII.GetString(buffer);
 
-                        Shutdown();
-                    }
-                    else if (data.ToUpper().Contains("TSC1"))
-                    {
-                        do
+                        if (data.ToUpper().Contains("TSC1"))
                         {
-                            Console.WriteLine("Take Screenshot!" + " \n");
-                            var bitmap = SaveScreenshot();
-                            var stream = new MemoryStream();
-                            bitmap.Save(stream, ImageFormat.Bmp);
-                            sendData(stream.ToArray(), client.GetStream());
-                            //string z = client.GetStream().Read(buffer, 0, bytesize).ToString();
-                            //data = ASCIIEncoding.ASCII.GetString(buffer);
-                        } while (true);
-                        //data.ToUpper().Contains("TSC1")
+                            do
+                            {
+                                Console.WriteLine("Take Screenshot!" + " \n");
+                                var bitmap = SaveScreenshot();
+                                var stream = new MemoryStream();
+                                bitmap.Save(stream, ImageFormat.Png);
+                                sendData(stream.ToArray(), MEM);
+                                stream.Dispose();
+                                string z = client.GetStream().Read(buffer, 0, bytesize).ToString();
+                            } while (client.Connected);
+                        }
                     }
-                }
-                catch (Exception exc)
-                {
-                    client.Dispose();
-                    client.Close();
+                    catch (Exception exc)
+                    {
+                        client.Dispose();
+                        client.Close();
+                    }
                 }
             }
 

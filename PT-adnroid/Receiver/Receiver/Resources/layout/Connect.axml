@@ -14,15 +14,17 @@
         android:hint="IP Address"  
         android:layout_width="match_parent"  
         android:layout_height="wrap_content"  
+		android:inputType="number|numberDecimal"
+		android:digits="0123456789."
         android:id="@+id/edtIpAddress" />  
-    <EditText  
-        android:hint="Port"  
-        android:layout_width="match_parent"  
-        android:layout_height="wrap_content"  
-        android:id="@+id/edtPort" />  
     <Button  
         android:text="Connect"  
         android:layout_width="match_parent"  
         android:layout_height="wrap_content"  
         android:id="@+id/btnConnect" />  
+	<Button  
+        android:text="Logout"  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:id="@+id/btnLogout" />  
 </LinearLayout> 

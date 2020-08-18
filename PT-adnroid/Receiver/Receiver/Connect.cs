@@ -16,23 +16,28 @@ namespace Receiver
     [Activity(Label = "Connect")]
     public class Connect : Activity
     {
-        private EditText edtIp, edtport;
-        private Button btnConnect;
+        private EditText edtIp;
+        private Button btnConnect, btnLogout;
         private TcpClient client;
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             client = new TcpClient();
-            // Create your application here
             SetContentView(Resource.Layout.Connect);
             edtIp = FindViewById<EditText>(Resource.Id.edtIpAddress);
-            edtport = FindViewById<EditText>(Resource.Id.edtPort);
             btnConnect = FindViewById<Button>(Resource.Id.btnConnect);
+
+            btnLogout = FindViewById<Button>(Resource.Id.btnLogout);
+            btnLogout.Click += async delegate
+            {
+                StartActivity(typeof(MainActivity));
+            };
+
             btnConnect.Click += async delegate
             {
                 try
                 {
-                    await client.ConnectAsync(edtIp.Text, Convert.ToInt32(edtport.Text));
+                    client.Connect(edtIp.Text, 1234);
                     if (client.Connected)
                     {
                         Connection.Instance.client = client;
@@ -48,7 +53,6 @@ namespace Receiver
                 catch (Exception x)
                 {
                     Toast.MakeText(this, "Connection failed!", ToastLength.Short).Show();
-                    Toast.MakeText(this, "" + x, ToastLength.Short).Show();
                 }
             };
         }
