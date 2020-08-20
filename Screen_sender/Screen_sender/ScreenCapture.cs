@@ -78,71 +78,71 @@ namespace Screen_sender
             bmp.Save("screen_" + DateTime.Now.Year + '-' + DateTime.Now.DayOfYear + '-' + DateTime.Now.TimeOfDay + ".jpg", imageCodecInfo, encoderParameters);
         }
 
-        public byte[] captureNoMouse()
+        public Task<byte[]> captureNoMouseAsync()
         {
-            //Console.WriteLine(allBounds.Length);
-            Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
-
-            // --------------< save image to file >-----------------
-            using (Graphics g = Graphics.FromImage(desktopBMP))
+            return Task.Run(() =>
             {
-                g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
-            }
-            using (var mss = new MemoryStream())
-            {
-                //ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
-                //EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 90L);
-                //EncoderParameters encoderParameters = new EncoderParameters();
-                //encoderParameters.Param[0] = encoderParameter;
-                desktopBMP.Save(mss, ImageFormat.Jpeg);
-                return mss.ToArray();
-            }
-        }
+                Rectangle curBounds = new Rectangle(new Point((int)(Cursor.Position.X * DPI - Cursor.Current.HotSpot.X), (int)(Cursor.Position.Y * DPI - Cursor.Current.HotSpot.Y)), cursor.Size);
+                Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
 
-        public byte[] captureWithMouse()
-        {
-
-            //Console.WriteLine(allBounds.Length);
-            Rectangle curBounds = new Rectangle(new Point((int)(Cursor.Position.X*DPI - Cursor.Current.HotSpot.X), (int)(Cursor.Position.Y*DPI - Cursor.Current.HotSpot.Y)), cursor.Size);
-            Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
-
-            // --------------< save image to file >-----------------
-            /*
-            using (Graphics g = Graphics.FromImage(desktopBMP))
-            {
-                g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
-                cursor.Draw(g,curBounds);
-                using (MemoryStream mss = new MemoryStream())
+                // --------------< save image to file >-----------------
+                /*
+                using (Graphics g = Graphics.FromImage(desktopBMP))
                 {
-                    desktopBMP.Save(mss, ImageFormat.Jpeg);
-                    return mss.ToArray();
-                }
-            }
-            */
-
-            // ---------------< save smaller size >-----------------
-
-            using (Bitmap b = new Bitmap(1280, 720))
-            {
-                using (Graphics g2 = Graphics.FromImage(desktopBMP))
-                {
-                    g2.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
-                    cursor.Draw(g2, curBounds);
-                    using (Graphics g = Graphics.FromImage(b))
+                    g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
+                    cursor.Draw(g,curBounds);
+                    using (MemoryStream mss = new MemoryStream())
                     {
-                        g.DrawImage(desktopBMP, 0, 0, 1280, 720);
-                        using (var mss = new MemoryStream(1280*720))
-                        {
-                            //ImageCodecInfo imageCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
-                            //EncoderParameter encoderParameter = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
-                            //EncoderParameters encoderParameters = new EncoderParameters(1);
-                            //encoderParameters.Param[0] = encoderParameter;
-                            b.Save(mss, ImageFormat.Jpeg);
-                            return mss.ToArray();
-                        }
+                        desktopBMP.Save(mss, ImageFormat.Jpeg);
+                        return mss.ToArray();
                     }
                 }
-            }
+                */
+
+                // ---------------< save smaller size >-----------------
+                Graphics g2 = Graphics.FromImage(desktopBMP);
+                g2.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
+                Bitmap b = new Bitmap(1280, 720);
+                Graphics g = Graphics.FromImage(b);
+                g.DrawImage(desktopBMP, 0, 0, 1280, 720);
+                var mss = new MemoryStream(1280 * 720);
+                b.Save(mss, ImageFormat.Jpeg);
+                return mss.ToArray();
+            });
+        }
+
+        public Task<byte[]> captureWithMouseAsync()
+        {
+            return Task.Run(() =>
+            {
+                Rectangle curBounds = new Rectangle(new Point((int)(Cursor.Position.X * DPI - Cursor.Current.HotSpot.X), (int)(Cursor.Position.Y * DPI - Cursor.Current.HotSpot.Y)), cursor.Size);
+                Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
+
+                // --------------< save image to file >-----------------
+                /*
+                using (Graphics g = Graphics.FromImage(desktopBMP))
+                {
+                    g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
+                    cursor.Draw(g,curBounds);
+                    using (MemoryStream mss = new MemoryStream())
+                    {
+                        desktopBMP.Save(mss, ImageFormat.Jpeg);
+                        return mss.ToArray();
+                    }
+                }
+                */
+
+                // ---------------< save smaller size >-----------------
+                Graphics g2 = Graphics.FromImage(desktopBMP);
+                g2.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
+                cursor.Draw(g2, curBounds);
+                Bitmap b = new Bitmap(1280, 720);
+                Graphics g = Graphics.FromImage(b);
+                g.DrawImage(desktopBMP, 0, 0, 1280, 720);
+                var mss = new MemoryStream(1280 * 720);
+                b.Save(mss, ImageFormat.Jpeg);
+                return mss.ToArray();
+            });
         }
     }
 }

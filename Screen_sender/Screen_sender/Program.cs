@@ -21,10 +21,11 @@ namespace Screen_sender
         static int quality;
         static int resolution;
         static float dpi;
+        static bool mouse;
 
         static bool connectionEnd;
 
-        static void sendScreenDataAsync(int delay_ms)
+        static async Task sendScreenDataAsync(int delay_ms)
         {
             ScreenCapture screen = new ScreenCapture(dpi);
             TcpClient sender = new TcpClient(new IPEndPoint(IPAddress.Parse(ipAddr), 0));
@@ -33,9 +34,30 @@ namespace Screen_sender
             //int it = 0;
             while (!connectionEnd)
             {
-                byte[] data = screen.captureWithMouse();
-                
-                sender.GetStream().WriteAsync(data, 0, data.Length);
+                await screen.captureWithMouseAsync().ContinueWith(
+                    async (data) =>
+                    {
+                        await sender.GetStream().WriteAsync(data.Result, 0, data.Result.Length);
+                    });  
+                //Console.WriteLine(++it);
+                Thread.Sleep(1);
+            }
+        }
+
+        static async Task sendScreenDataNoMouseAsync(int delay_ms)
+        {
+            ScreenCapture screen = new ScreenCapture(dpi);
+            TcpClient sender = new TcpClient(new IPEndPoint(IPAddress.Parse(ipAddr), 0));
+            sender.Connect(IPAddress.Parse(ipAddr), ipPort);
+            //GZipStream zipStream = new GZipStream(sender.GetStream(), CompressionMode.Compress);
+            //int it = 0;
+            while (!connectionEnd)
+            {
+                await screen.captureNoMouseAsync().ContinueWith(
+                    async (data) =>
+                    {
+                        await sender.GetStream().WriteAsync(data.Result, 0, data.Result.Length);
+                    });
                 //Console.WriteLine(++it);
                 Thread.Sleep(1);
             }
@@ -58,7 +80,9 @@ namespace Screen_sender
                             try
                             {
                                 connectionEnd = false;
-                                Task t1 = new Task(()=> { sendScreenDataAsync((int)(1000 / fps)); });
+                                Task t1;
+                                if (mouse == true) t1 = sendScreenDataAsync((int)(1000 / fps));
+                                else t1 = sendScreenDataNoMouseAsync((int)(1000 / fps));
                                 t1.Start();
                             }
                             catch (Exception) { }
@@ -76,7 +100,9 @@ namespace Screen_sender
                             try
                             {
                                 connectionEnd = false;
-                                Task t1 = new Task(() => { sendScreenDataAsync((int)(1000 / fps)); });
+                                Task t1;
+                                if (mouse == true) t1 = sendScreenDataAsync((int)(1000 / fps));
+                                else t1 = sendScreenDataNoMouseAsync((int)(1000 / fps));
                                 t1.Start();
                             }
                             catch (Exception) { }
@@ -160,7 +186,19 @@ namespace Screen_sender
                                                 catch (Exception) { Console.WriteLine("error command"); }
                                             }
                                             break;
-                                        default: break;
+                                        case "--mouse":
+                                            {
+
+                                                mouse = (mouse != true);
+                                                var _is = (mouse == true ? "On" : "Off");
+                                                Console.WriteLine("Mouse: "+ _is);
+                                            }
+                                            break;
+                                        default:
+                                            {
+                                                Console.WriteLine("error command");
+                                            }
+                                            break;
                                     }
                                 }
                             }
@@ -175,6 +213,7 @@ namespace Screen_sender
                             Console.WriteLine("Video quality (0-100%): " + quality + "%");
                             Console.WriteLine("Resolution: " + resolution + "p");
                             Console.WriteLine("Dpi: " + dpi);
+                            Console.WriteLine("Mouse: " + mouse.ToString());
                         }
                         break;
                     case "help":
@@ -207,6 +246,7 @@ namespace Screen_sender
                                             Console.WriteLine("--quality <value> (value 0-100)");
                                             Console.WriteLine("--res <resY> ");
                                             Console.WriteLine("--dpi <value (e.g. 1,25)>  ");
+                                            Console.WriteLine("--mouse");
                                         }
                                         break;
                                     case "1":
@@ -230,9 +270,10 @@ namespace Screen_sender
             ipAddr = "127.0.0.1";
             fps = 30;
             quality = 100;
-            resolution = 1080;
+            resolution = 720;
             connectionEnd = false;
             dpi = 1.25f;
+            mouse = true;
             //ScreenCapture sc = new ScreenCapture(1.25f);
             //byte[] array = sc.captureWithMouse();
             //Console.WriteLine(array.Length); //66960 B
