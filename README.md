@@ -6,9 +6,9 @@ Mobile application allows to send your phone screen to other device.
 Everything <b>wireless</b>, no more cables needed! 
 
 ## Description 📋
-Project contains two systems: for PC and Android devices. Each system allows to cast screen to other device in realtime.   
+Project contains two systems: for PC and Android devices. Each system allows to cast the screen one device to another in real time.   
 Each system contains two apps: sender and receiver, there is NO proxy server.   
-In PC receiver app you can change window size without changing screencast aspect ratio. 
+In the PC receiver app you can change window size without changing screencast aspect ratio. 
 
 ## Tools 🛠️
 ### Software
@@ -19,10 +19,10 @@ In PC receiver app you can change window size without changing screencast aspect
 
 ## How to run ⚙️
 ### PC app
-Just run .exe files. Sender app is a cmd app, receiver app is normal window.  
-In sender app type <i>help</i> to list all available commands.  
+Just run .exe files. Sender is a command app and receiver is a normal window app.  
+In the sender app type <i>help</i> to list all available commands.  
 Set receiver device IPv4 address and type <i>start</i>.  
-To stop transmitting data, just type <i>stop</i> in sender app.
+To stop transmitting data, just type <i>stop</i> in the sender app.
 
 ### Adnroid app
 
@@ -30,7 +30,7 @@ To stop transmitting data, just type <i>stop</i> in sender app.
 Open both projects in Visual Studio. Build, and run both applictions. Just it, nothing more. 
 
 ## Future improvements ✏️
-Try to implement cross devices transmitting, able to transmit data from PC to mobile and vice versa. MAYBE !!
+Try to implement the possibility of cross device data transmission - from PC to mobile and vice versa. MAYBE!
 
 ## Addition 💡
 The project was conducted during the Telecommunication Project course held by the Institute of Computing Science, Poznan University of Technology.
