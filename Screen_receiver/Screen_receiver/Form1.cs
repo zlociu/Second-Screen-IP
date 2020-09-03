@@ -18,6 +18,8 @@ namespace Screen_receiver
     public partial class Form1 : Form
     {
         private bool isFullScreen = false;
+        private Image img;
+         
         public void listenTask()
         {
             while (true)
@@ -46,11 +48,11 @@ namespace Screen_receiver
                         pictureBox1.Invoke((MethodInvoker)delegate
                         {
                             receiver.Stop();
-                            Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
-                            Graphics flagGraphics = Graphics.FromImage(flag);
-                            flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
-                            flagGraphics.DrawString("Awaiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(300, 250));
-                            pictureBox1.Image = flag;
+                            //Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
+                            //Graphics flagGraphics = Graphics.FromImage(flag);
+                            //flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
+                            //flagGraphics.DrawString("Awaiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(300, 250));
+                            pictureBox1.Image = img;
                             pictureBox1.Refresh();
                         });
                         break;
@@ -72,12 +74,13 @@ namespace Screen_receiver
             
             this.AutoSize = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
-            Graphics flagGraphics = Graphics.FromImage(flag);
+            // Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
+            // Graphics flagGraphics = Graphics.FromImage(flag);
+            //flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
+            //flagGraphics.DrawString("Awaiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(300,250));
+            img = Image.FromFile("wait_pic.bmp");
 
-            flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
-            flagGraphics.DrawString("Awaiting connection . . .", new Font("Microsoft Tai Le", 40), Brushes.DeepSkyBlue, new Point(300,250));
-            pictureBox1.Image = flag;
+            pictureBox1.Image = img;
             pictureBox1.Refresh();
             var t = new Thread(listenTask);
             t.IsBackground = true;
