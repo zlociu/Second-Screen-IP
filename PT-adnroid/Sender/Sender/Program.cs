@@ -98,7 +98,7 @@ namespace Sender
                         {
                             do
                             {
-                                Console.WriteLine("Take Screenshot!" + " \n");
+                                Console.WriteLine("Screen Sended!" + " \n");
                                 var bitmap = SaveScreenshot();
                                 var stream = new MemoryStream();
                                 bitmap.Save(stream, ImageFormat.Png);
