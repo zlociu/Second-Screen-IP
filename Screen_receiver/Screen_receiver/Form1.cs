@@ -35,7 +35,8 @@ namespace Screen_receiver
                 {
                     try
                     {
-                        client.GetStream().Read(data, 0, data.Length);
+                        var ln = client.GetStream().Read(data, 0, data.Length);
+                        if (ln == 0) throw new IOException();
                         Image img = Image.FromStream(m1);
                         pictureBox1.Invoke((MethodInvoker)delegate
                         {
@@ -48,6 +49,7 @@ namespace Screen_receiver
                         pictureBox1.Invoke((MethodInvoker)delegate
                         {
                             receiver.Stop();
+                            client.Close();
                             //Bitmap flag = new Bitmap(pictureBox1.Size.Width, pictureBox1.Height);
                             //Graphics flagGraphics = Graphics.FromImage(flag);
                             //flagGraphics.FillRectangle(Brushes.LightGray, 0, 0, flag.Width, flag.Height);
@@ -62,6 +64,7 @@ namespace Screen_receiver
                         Environment.Exit(0);
                     }
                 }
+
             }
         }
 
