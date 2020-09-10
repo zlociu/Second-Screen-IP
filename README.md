@@ -39,3 +39,10 @@ Try to implement the possibility of cross device data transmission - from PC to 
 
 ## Addition 💡
 The project was conducted during the Telecommunication Project course held by the Institute of Computing Science, Poznan University of Technology.
+
+### Links
+- report: https://www.overleaf.com/read/cwvcmrwhmmrh
+- videos with working project: 
+  - https://www.youtube.com/watch?v=ThuDO2hI9NY
+  -
+  -
