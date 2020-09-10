@@ -44,5 +44,5 @@ The project was conducted during the Telecommunication Project course held by th
 - report: https://www.overleaf.com/read/cwvcmrwhmmrh
 - videos with working project: 
   - https://www.youtube.com/watch?v=ThuDO2hI9NY
-  -
+  - https://youtu.be/HW77FS8kEy4
   -
