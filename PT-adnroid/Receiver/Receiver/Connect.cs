@@ -28,12 +28,12 @@ namespace Receiver
             btnConnect = FindViewById<Button>(Resource.Id.btnConnect);
 
             btnLogout = FindViewById<Button>(Resource.Id.btnLogout);
-            btnLogout.Click += async delegate
+            btnLogout.Click += delegate
             {
                 StartActivity(typeof(MainActivity));
             };
 
-            btnConnect.Click += async delegate
+            btnConnect.Click += delegate
             {
                 try
                 {
