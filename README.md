@@ -2,7 +2,7 @@
 
 ## Overview 👁️
 Simple application for transmitting screen between computers via IP connection in the same area newtork.  
-Mobile application allows to send your phone screen to other device.  
+Mobile application allows to send your computer screen to mobile device with Android system.  
 Everything <b>wireless</b>, no more cables needed! 
 
 ## Description 📋
@@ -25,6 +25,11 @@ Set receiver device IPv4 address and type <i>start</i>.
 To stop transmitting data, just type <i>stop</i> in the sender app.
 
 ### Adnroid app
+run sender.exe file on your computer, command window will open with app IP adress.
+launch receiver app on a phone with android.
+create an account if you havent already and log in using login and password you specified.
+enter previously mentioned IP adress of sender app and click Connect button that will start transmition.
+in order to end transmition click Stop button in receiver app.
 
 ## How to compile 💻
 Open both projects in Visual Studio. Build, and run both applictions. Just it, nothing more. 
@@ -34,3 +39,10 @@ Try to implement the possibility of cross device data transmission - from PC to 
 
 ## Addition 💡
 The project was conducted during the Telecommunication Project course held by the Institute of Computing Science, Poznan University of Technology.
+
+### Links
+- report: https://www.overleaf.com/read/cwvcmrwhmmrh
+- videos with working project: 
+  - https://www.youtube.com/watch?v=ThuDO2hI9NY
+  - https://youtu.be/HW77FS8kEy4
+  - https://youtu.be/HDtoel7jDVc

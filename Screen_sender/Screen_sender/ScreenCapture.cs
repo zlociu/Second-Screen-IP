@@ -86,20 +86,16 @@ namespace Screen_sender
                 Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
 
                 // --------------< save image to file >-----------------
-                /*
-                using (Graphics g = Graphics.FromImage(desktopBMP))
-                {
-                    g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
-                    cursor.Draw(g,curBounds);
-                    using (MemoryStream mss = new MemoryStream())
-                    {
-                        desktopBMP.Save(mss, ImageFormat.Jpeg);
-                        return mss.ToArray();
-                    }
-                }
-                */
+
+                Graphics g = Graphics.FromImage(desktopBMP);
+                g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
+                MemoryStream mss = new MemoryStream();
+                desktopBMP.Save(mss, ImageFormat.Jpeg);
+                return mss.ToArray();
+                
 
                 // ---------------< save smaller size >-----------------
+                /*
                 Graphics g2 = Graphics.FromImage(desktopBMP);
                 g2.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
                 Bitmap b = new Bitmap(1280, 720);
@@ -108,6 +104,7 @@ namespace Screen_sender
                 var mss = new MemoryStream(1280 * 720);
                 b.Save(mss, ImageFormat.Jpeg);
                 return mss.ToArray();
+                */
             });
         }
 
@@ -119,20 +116,17 @@ namespace Screen_sender
                 Bitmap desktopBMP = new Bitmap(scrBounds.Width, scrBounds.Height);
 
                 // --------------< save image to file >-----------------
-                /*
-                using (Graphics g = Graphics.FromImage(desktopBMP))
-                {
-                    g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
-                    cursor.Draw(g,curBounds);
-                    using (MemoryStream mss = new MemoryStream())
-                    {
-                        desktopBMP.Save(mss, ImageFormat.Jpeg);
-                        return mss.ToArray();
-                    }
-                }
-                */
+
+                Graphics g = Graphics.FromImage(desktopBMP);
+                g.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
+                cursor.Draw(g,curBounds);
+                MemoryStream mss = new MemoryStream();
+                desktopBMP.Save(mss, ImageFormat.Jpeg);
+                return mss.ToArray();
+                
 
                 // ---------------< save smaller size >-----------------
+                /*
                 Graphics g2 = Graphics.FromImage(desktopBMP);
                 g2.CopyFromScreen(scrBounds.Location, Point.Empty, scrBounds.Size);
                 cursor.Draw(g2, curBounds);
@@ -142,6 +136,7 @@ namespace Screen_sender
                 var mss = new MemoryStream(1280 * 720);
                 b.Save(mss, ImageFormat.Jpeg);
                 return mss.ToArray();
+                */
             });
         }
     }
